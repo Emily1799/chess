@@ -406,6 +406,7 @@ while running:
             if not (screen.get_at(pos)) == GREEN:
                 selected = None
                 found = False
+                
         
 
    
@@ -416,6 +417,7 @@ while running:
         if (piece.rect.collidepoint(pos)):
             found = True
             selected = piece
+            all_squares.update(-1) #remove all other highlighted squares
             #change the color of possible move squares
             possible_locs = can_move(piece, square_list)
             for loc in possible_locs:
@@ -423,21 +425,27 @@ while running:
             break #we've found the selected piece. No need to loop through anymore
         if(not found): 
             selected = None
-
+    if not ((screen.get_at(pos)) == GREEN) and not selected:
+        all_squares.update(-1)
+        
     #if a piece has been selected, then a player clicks a green square, move the piece there
     if(not selected is None):
         for square in all_squares:
             if square.rect.collidepoint(pos):
-                in_square = True
+                found = True
                 if(square.color == GREEN): #if it's a possible move
                     #move piece to that square
                     selected.rect.x = square.rect.x;
                     selected.rect.y = square.rect.y;
                     selected.pos = [(square.rect.x - 40)/60, (square.rect.y-40)/60]
                     selected = None
-                    found = False
-    if selected == None and (not found):
-        all_squares.update(-1)
+                    all_squares.update(-1)
+                    pos = [0,0]
+            
+    
+        
+
+
 
      
      
