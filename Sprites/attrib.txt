@@ -1,0 +1,1 @@
+Sprites were found at https://github.com/patosai/chess/tree/master/Sprites
