@@ -122,10 +122,24 @@ def can_move(piece, square_list):
             possible_locs.append(loc2)
 
     if(piece.form == "N"):
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                loc = [cur_loc[0] + (i*2), cur_loc[1]+(j*2)]
-                possible_locs.append(loc)
+        #fuck it, doing this by hand...
+        loc1 = [cur_loc[0] + 1, cur_loc[1] + 2]
+        loc2 = [cur_loc[0] - 1, cur_loc[1] - 2]
+        loc3 = [cur_loc[0] + 2, cur_loc[1] + 1]
+        loc4 = [cur_loc[0] - 2, cur_loc[1] - 1]
+        loc5 = [cur_loc[0] + 2, cur_loc[1] - 1]
+        loc6 = [cur_loc[0] + 1, cur_loc[1] - 2]
+        loc7 = [cur_loc[0] - 2, cur_loc[1] + 1]
+        loc8 = [cur_loc[0] - 1, cur_loc[1] + 2]
+        possible_locs.append(loc1)
+        possible_locs.append(loc2)
+        possible_locs.append(loc3)
+        possible_locs.append(loc4)
+        possible_locs.append(loc5)
+        possible_locs.append(loc6)
+        possible_locs.append(loc7)
+        possible_locs.append(loc8)
+        
     if(piece.form == "P"):
         if(piece.team == 0):
             if(not piece.has_moved):
@@ -396,6 +410,21 @@ pos = [0,0]
 selected = None
 in_square = False
 found = False
+
+def capturePiece(squares, pieces, piece, square):
+    #If there's a piece there, capture it
+    captured = None
+    if (not square.occupied_color == -1) and (not square.occupied_color == selected.team): 
+            #find out which piece is colliding
+            for cur in pieces:
+                if cur.rect.collidepoint((square.rect.x , square.rect.y)):
+                    captured = cur
+                    print "piece captured"
+                    if captured.form == "K":
+                        pieces = None
+            pieces.remove(captured)
+    return captured
+turn = False #white goes first
 while running:
     # --- Main event loop
     for event in pygame.event.get(): 
@@ -415,14 +444,15 @@ while running:
         #let the piece know where it's current location is
         piece.loc = [(piece.rect.x - 40)/60, (piece.rect.y-40)/60]
         if (piece.rect.collidepoint(pos)):
-            found = True
-            selected = piece
-            all_squares.update(-1) #remove all other highlighted squares
-            #change the color of possible move squares
-            possible_locs = can_move(piece, square_list)
-            for loc in possible_locs:
-                square_list[loc[0]][loc[1]].update(GREEN)
-            break #we've found the selected piece. No need to loop through anymore
+            if (turn ==piece.team):
+                found = True
+                selected = piece
+                all_squares.update(-1) #remove all other highlighted squares
+                #change the color of possible move squares
+                possible_locs = can_move(piece, square_list)
+                for loc in possible_locs:
+                    square_list[loc[0]][loc[1]].update(GREEN)
+                break #we've found the selected piece. No need to loop through anymore
         if(not found): 
             selected = None
     if not ((screen.get_at(pos)) == GREEN) and not selected:
@@ -434,14 +464,17 @@ while running:
             if square.rect.collidepoint(pos):
                 found = True
                 if(square.color == GREEN): #if it's a possible move
-                    #move piece to that square
-                    selected.rect.x = square.rect.x;
-                    selected.rect.y = square.rect.y;
+                                
+                    selected.rect.x = square.rect.x
+                    selected.rect.y = square.rect.y                              
                     selected.pos = [(square.rect.x - 40)/60, (square.rect.y-40)/60]
+                    selected.has_moved = True
+                    capturePiece(square_list, pieces, piece, square)
+                    square.occupied_color == selected.team
                     selected = None
                     all_squares.update(-1)
                     pos = [0,0]
-            
+                    turn = not turn
     
         
 
