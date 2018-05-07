@@ -482,8 +482,11 @@ while running:
 
      
      
-     # First, clear the screen to white. 
-    screen.fill(WHITE)
+     # First, clear the screen to a bg color based on the current turn
+    if(not turn):
+        screen.fill(WHITE)
+    elif(turn):
+        screen.fill(BLACK)
     #draw board squares
     all_squares.draw(screen)
     #draw pieces
